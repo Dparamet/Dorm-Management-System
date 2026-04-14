@@ -4,11 +4,19 @@ generator client {
 
 datasource db {
   provider = "postgresql"
+  
 }
 
 enum Role {
   ADMIN
   TENANT
+}
+
+enum RoomStatus {
+  VACANT // ว่าง
+  OCCUPIED // มีคนเช่า
+  MAINTENANCE // ซ่อมบำรุง
+  RESERVED // จองแล้ว
 }
 
 model User {
@@ -20,16 +28,21 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  rooms     Room[]
+  rooms Room[] // 1 User เช่าได้หลายห้อง (One-to-Many)
 }
 
 model Room {
-  id          String   @id @default(cuid())
-  roomNumber  String   @unique
-  floor       Int
-  price       Float
-  isAvailable Boolean  @default(true)
+  id         String     @id @default(cuid())
+  roomNumber String     @unique
+  floor      Int
+  price      Float
+  status     RoomStatus @default(VACANT)
+  roomType   String? // เช่น "Fan", "Air-Con"
 
-  tenantId    String?
-  tenant      User?    @relation(fields: [tenantId], references: [id])
+  // Relations
+  tenantId String?
+  tenant   User?   @relation(fields: [tenantId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
