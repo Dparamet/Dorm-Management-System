@@ -41,6 +41,24 @@ model Room {
   // Relations
   tenantId String?
   tenant   User?   @relation(fields: [tenantId], references: [id])
+  bills    Bill[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Bill {
+  id          String  @id @default(cuid())
+  month       String // เช่น "2026-04"
+  rentPrice   Float // ค่าเช่าห้องเดือนนั้น
+  waterUnit   Int // หน่วยน้ำ
+  elecUnit    Int // หน่วยไฟ
+  totalAmount Float // ยอดรวม
+  isPaid      Boolean @default(false) // จ่ายยัง?
+
+  // Relations
+  roomId String
+  room   Room   @relation(fields: [roomId], references: [id])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
